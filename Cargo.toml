@@ -2,7 +2,7 @@
 authors = ["Eden Wang <edwardwang33773@gmail.com>"]
 description = "A simple OS kernel implemented in rust, which has referenced https://os.phil-opp.com/"
 name = "ember_os"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 readme = "README.md"
 repository = "https://github.com/DrEden33773/ember_os"
