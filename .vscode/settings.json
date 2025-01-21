@@ -10,6 +10,8 @@
     "bootloader",
     "dealloc",
     "hashbrown",
+    "iobase",
+    "iosize",
     "keyevent",
     "keypresses",
     "nonoverlapping",

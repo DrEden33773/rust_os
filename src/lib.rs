@@ -5,6 +5,8 @@
 #![feature(custom_test_frameworks)]
 #![feature(abi_x86_interrupt)]
 #![feature(async_closure)] // stable in 1.85.0-nightly
+#![feature(allocator_api)]
+#![feature(slice_ptr_get)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 

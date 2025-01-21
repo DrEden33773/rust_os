@@ -2,7 +2,7 @@
 
 use super::{align_up, Locked};
 use core::alloc::{GlobalAlloc, Layout};
-use core::ptr;
+use core::ptr::{self};
 
 /// Stack Allocator
 #[deprecated = "Fast! But often causes `OOM` (out of memory)"]

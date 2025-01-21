@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use core::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
+use core::alloc::{Allocator, GlobalAlloc, Layout};
+use core::ptr::{null_mut, slice_from_raw_parts_mut, NonNull};
 use x86_64::{
   structures::paging::{
     mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB,
@@ -19,6 +19,16 @@ pub const HEAP_START_PTR: *mut u8 = HEAP_START as *mut u8;
 
 /// `zero-sized` type
 pub struct Dummy;
+
+unsafe impl Allocator for Dummy {
+  fn allocate(&self, _layout: Layout) -> Result<core::ptr::NonNull<[u8]>, core::alloc::AllocError> {
+    Ok(unsafe { NonNull::new_unchecked(slice_from_raw_parts_mut(null_mut(), 0)) })
+  }
+
+  unsafe fn deallocate(&self, _ptr: core::ptr::NonNull<u8>, _layout: Layout) {
+    panic!("dealloc should be never called!\n")
+  }
+}
 
 unsafe impl GlobalAlloc for Dummy {
   unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
@@ -70,44 +80,17 @@ fn align_up(addr: usize, align: usize) -> usize {
   addr + offset
 }
 
-cfg_if::cfg_if! {
-  if #[cfg(feature = "use_FixedSizeBlockAllocator")] {
+#[cfg(feature = "use_BumpAllocator")]
+use bump::BumpAllocator as AllocatorType;
+#[cfg(feature = "use_FixedSizeBlockAllocator")]
+use fixed_size_block::FixedSizeBlockAllocator as AllocatorType;
+#[cfg(feature = "use_LinkedListAllocator")]
+use linked_list::LinkedListAllocator as AllocatorType;
+#[cfg(feature = "use_LockedHeapAllocator")]
+use linked_list_allocator::LockedHeap as AllocatorType;
 
-    use fixed_size_block::FixedSizeBlockAllocator;
-
-    #[global_allocator]
-    static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
-
-  } else if #[cfg(feature = "use_LockedHeapAllocator")] {
-
-    use linked_list_allocator::LockedHeap;
-
-    #[global_allocator]
-    static ALLOCATOR: LockedHeap = LockedHeap::empty();
-
-  } else if #[cfg(feature = "use_LinkedListAllocator")] {
-
-    use linked_list::LinkedListAllocator;
-
-    #[global_allocator]
-    static ALLOCATOR: Locked<LinkedListAllocator> = Locked::new(LinkedListAllocator::new());
-
-  } else if #[cfg(feature = "use_BumpAllocator")] {
-
-    use bump::BumpAllocator;
-
-    #[global_allocator]
-    static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
-
-  } else {
-
-    use fixed_size_block::FixedSizeBlockAllocator;
-
-    #[global_allocator]
-    static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
-
-  }
-}
+#[global_allocator]
+pub static ALLOCATOR: Locked<AllocatorType> = Locked::new(AllocatorType::new());
 
 pub fn init_heap(
   mapper: &mut impl Mapper<Size4KiB>,

@@ -33,7 +33,12 @@ extern "x86-interrupt" fn test_double_fault_handler(
   _stack_frame: InterruptStackFrame,
   _error_code: u64,
 ) -> ! {
-  serial_println!("[ok]\n");
+  // green
+  serial_print!("\x1b[32m");
+  serial_print!("[ok]");
+  serial_print!("\x1b[0m");
+  serial_println!("\n");
+
   exit_qemu(QemuExitCode::Success);
   ember_os::hlt_loop()
 }
@@ -53,6 +58,11 @@ fn main(_boot_info: &'static BootInfo) -> ! {
 
   // trigger a stack overflow
   stack_overflow();
+
+  // red
+  serial_print!("\x1b[31m");
+  serial_print!("[test did not panic]");
+  serial_println!("\x1b[0m");
 
   panic!("execution continued after stack overflow!\n");
 }

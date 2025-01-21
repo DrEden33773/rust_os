@@ -16,7 +16,12 @@ entry_point!(main);
 #[no_mangle]
 fn main(_boot_info: &'static BootInfo) -> ! {
   should_fail();
-  serial_println!("[test did not panic]");
+
+  // red
+  serial_print!("\x1b[31m");
+  serial_print!("[test did not panic]");
+  serial_println!("\x1b[0m");
+
   exit_qemu(QemuExitCode::Failed);
   ember_os::hlt_loop()
 }
@@ -28,7 +33,12 @@ fn should_fail() {
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-  serial_println!("[ok]\n");
+  // green
+  serial_print!("\x1b[32m");
+  serial_print!("[ok]");
+  serial_print!("\x1b[0m");
+  serial_println!("\n");
+
   exit_qemu(QemuExitCode::Success);
   ember_os::hlt_loop()
 }

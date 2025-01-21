@@ -19,7 +19,7 @@ pub struct Iter<'a, T: Default> {
   marker: PhantomData<&'a ListNode<T>>,
 }
 
-impl<'a, T: Default> DoubleEndedIterator for Iter<'a, T> {
+impl<T: Default> DoubleEndedIterator for Iter<'_, T> {
   fn next_back(&mut self) -> Option<Self::Item> {
     let curr: NonNull<ListNode<T>> = self.prev?;
     if curr.as_ptr() == self.head.as_ptr() {
@@ -70,7 +70,7 @@ pub struct IterMut<'a, T: Default> {
   marker: PhantomData<&'a mut ListNode<T>>,
 }
 
-impl<'a, T: Default> DoubleEndedIterator for IterMut<'a, T> {
+impl<T: Default> DoubleEndedIterator for IterMut<'_, T> {
   fn next_back(&mut self) -> Option<Self::Item> {
     let mut curr = self.prev?;
     if curr.as_ptr() == self.head.as_ptr() {

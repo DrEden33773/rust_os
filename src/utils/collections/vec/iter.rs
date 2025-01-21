@@ -18,7 +18,7 @@ pub struct Iter<'a, T> {
   marker: PhantomData<&'a T>,
 }
 
-impl<'a, T> DoubleEndedIterator for Iter<'a, T> {
+impl<T> DoubleEndedIterator for Iter<'_, T> {
   fn next_back(&mut self) -> Option<Self::Item> {
     if self.is_head {
       return None;
@@ -73,7 +73,7 @@ pub struct IterMut<'a, T> {
   marker: PhantomData<&'a mut T>,
 }
 
-impl<'a, T> DoubleEndedIterator for IterMut<'a, T> {
+impl<T> DoubleEndedIterator for IterMut<'_, T> {
   fn next_back(&mut self) -> Option<Self::Item> {
     if self.is_head {
       return None;

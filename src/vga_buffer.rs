@@ -106,8 +106,8 @@ impl Default for ColorCode {
 /// Character displayed on screen, with `ascii_char` and `color_code` info
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
-struct ScreenChar {
-  ascii_character: u8,
+pub(crate) struct ScreenChar {
+  ascii_char: u8,
   color_code: ColorCode,
 }
 
@@ -128,16 +128,16 @@ impl Buffer {
 }
 
 pub struct Writer {
-  row_position: usize,
-  column_position: usize,
+  row_pos: usize,
+  col_pos: usize,
   color_code: ColorCode,
   buffer: &'static mut Buffer,
 }
 
 lazy_static! {
   pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
-    row_position: BUFFER_HEIGHT - 1,
-    column_position: 0,
+    row_pos: BUFFER_HEIGHT - 1,
+    col_pos: 0,
     color_code: ColorCode::new(Color::White, Color::Black),
     buffer: unsafe { Buffer::static_init() },
   });
@@ -145,16 +145,16 @@ lazy_static! {
 
 impl Writer {
   pub fn enforce_backspace(&mut self) {
-    if self.column_position > 0 {
-      self.column_position -= 1;
+    if self.col_pos > 0 {
+      self.col_pos -= 1;
     } else {
-      self.column_position = BUFFER_WIDTH - 1;
-      if self.row_position > 0 {
-        self.row_position -= 1;
+      self.col_pos = BUFFER_WIDTH - 1;
+      if self.row_pos > 0 {
+        self.row_pos -= 1;
       }
     }
-    self.buffer.chars[self.row_position][self.column_position].write(ScreenChar {
-      ascii_character: b' ',
+    self.buffer.chars[self.row_pos][self.col_pos].write(ScreenChar {
+      ascii_char: b' ',
       color_code: self.color_code,
     });
   }
@@ -163,21 +163,21 @@ impl Writer {
   pub fn write_byte(&mut self, byte: u8) {
     match byte {
       b'\n' => self.new_line(),
-      b'\r' => self.clear_row(self.row_position),
+      b'\r' => self.clear_row(self.row_pos),
       b'\t' => {
         for _ in 0..4 {
           self.write_byte(b' ');
         }
       }
       byte => {
-        if self.column_position >= BUFFER_WIDTH {
+        if self.col_pos >= BUFFER_WIDTH {
           self.new_line();
         }
-        self.buffer.chars[self.row_position][self.column_position].write(ScreenChar {
-          ascii_character: byte,
+        self.buffer.chars[self.row_pos][self.col_pos].write(ScreenChar {
+          ascii_char: byte,
           color_code: self.color_code,
         });
-        self.column_position += 1;
+        self.col_pos += 1;
       }
     }
   }
@@ -191,13 +191,13 @@ impl Writer {
       }
     }
     self.clear_row(BUFFER_HEIGHT - 1);
-    self.column_position = 0;
+    self.col_pos = 0;
   }
 
   /// Clear the lowest row (mostly used after called `vga_buffer::Writer::new_line()`)
   fn clear_row(&mut self, row: usize) {
     let blank = ScreenChar {
-      ascii_character: b' ',
+      ascii_char: b' ',
       color_code: self.color_code,
     };
     for col in 0..BUFFER_WIDTH {
@@ -348,7 +348,7 @@ fn test_println_output() {
     writeln!(writer, "\n{}", s).expect("writeln failed!\n");
     for (i, c) in s.chars().enumerate() {
       let screen_char = writer.buffer.chars[BUFFER_HEIGHT - 2][i].read();
-      assert_eq!(char::from(screen_char.ascii_character), c);
+      assert_eq!(char::from(screen_char.ascii_char), c);
     }
   });
 }
