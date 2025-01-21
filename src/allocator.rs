@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use core::alloc::{Allocator, GlobalAlloc, Layout};
-use core::ptr::{null_mut, slice_from_raw_parts_mut, NonNull};
+use core::alloc::{GlobalAlloc, Layout};
+use core::ptr::null_mut;
 use x86_64::{
   structures::paging::{
     mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB,
@@ -19,16 +19,6 @@ pub const HEAP_START_PTR: *mut u8 = HEAP_START as *mut u8;
 
 /// `zero-sized` type
 pub struct Dummy;
-
-unsafe impl Allocator for Dummy {
-  fn allocate(&self, _layout: Layout) -> Result<core::ptr::NonNull<[u8]>, core::alloc::AllocError> {
-    Ok(unsafe { NonNull::new_unchecked(slice_from_raw_parts_mut(null_mut(), 0)) })
-  }
-
-  unsafe fn deallocate(&self, _ptr: core::ptr::NonNull<u8>, _layout: Layout) {
-    panic!("dealloc should be never called!\n")
-  }
-}
 
 unsafe impl GlobalAlloc for Dummy {
   unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
