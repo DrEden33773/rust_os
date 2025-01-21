@@ -37,11 +37,12 @@ pub async fn cached_show_fib(n: usize) {
   print!("Cached @ Fibonacci := {:?} ... ", vec);
 
   // assert
-  // deprecated: `.windows()`
-  for i in 2..vec.len() {
-    if vec[i] != vec[i - 1] + vec[i - 2] {
-      print_with_color_ln!([Red] "ERR!\n");
-      return;
+  for v in vec.windows(3) {
+    if let &[a, b, c] = v {
+      if c != a + b {
+        print_with_color_ln!([Red] "ERR!\n");
+        return;
+      }
     }
   }
   print_with_color_ln!(<Green> "OK!\n");
@@ -63,11 +64,12 @@ pub async fn show_fib(n: usize) {
   print!("Fibonacci := {:?} ... ", vec);
 
   // assert
-  // deprecated: `.windows()`
-  for i in 2..vec.len() {
-    if vec[i] != vec[i - 1] + vec[i - 2] {
-      print_with_color_ln!([Red] "ERR!\n");
-      return;
+  for v in vec.windows(3) {
+    if let &[a, b, c] = v {
+      if c != a + b {
+        print_with_color_ln!([Red] "ERR!\n");
+        return;
+      }
     }
   }
   print_with_color_ln!(Green, "OK!\n");
