@@ -105,7 +105,7 @@ pub unsafe fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static>
   OffsetPageTable::new(level_4_table, physical_memory_offset)
 }
 
-#[cfg(usr_def_addr_translate)]
+#[cfg(feature = "usr_def_addr_translate")]
 fn translate_addr_inner(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Option<PhysAddr> {
   use x86_64::{registers::control::Cr3, structures::paging::page_table::FrameError};
 
@@ -140,7 +140,7 @@ fn translate_addr_inner(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Opt
   Some(frame.start_address() + u64::from(addr.page_offset()))
 }
 
-#[cfg(usr_def_addr_translate)]
+#[cfg(feature = "usr_def_addr_translate")]
 pub unsafe fn translate_addr(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Option<PhysAddr> {
   translate_addr_inner(addr, physical_memory_offset)
 }

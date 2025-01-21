@@ -1,6 +1,6 @@
 #![no_std]
 #![cfg_attr(test, no_main)]
-#![feature(const_mut_refs)]
+// #![feature(const_mut_refs)] // stable in 1.83.0-nightly
 #![feature(custom_test_frameworks)]
 #![feature(abi_x86_interrupt)]
 #![feature(async_closure)]

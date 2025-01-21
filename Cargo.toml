@@ -20,7 +20,7 @@ default = [
     "use_EfficientExecutor",
     "use_SelfDefinedLRUCache",
 ]
-# allocator feauters
+# allocator features
 use_BumpAllocator = []
 use_LinkedListAllocator = []
 use_FixedSizeBlockAllocator = []
@@ -31,10 +31,12 @@ use_EfficientExecutor = []
 # collection features
 ## lru_cache features
 use_SelfDefinedLRUCache = []
+# usr def features
+usr_def_addr_translate = []
 
 [dependencies]
-hashbrown = "0.14.3"
-lru = "0.12.3"
+hashbrown = "0.15.2"
+lru = "0.12.5"
 cfg-if = "1.0.0"
 bootloader = { version = "0.9.28", features = ["map_physical_memory"] }
 volatile = "0.2.6"
