@@ -135,9 +135,6 @@ impl InterruptIndex {
   fn as_u8(self) -> u8 {
     self as u8
   }
-  fn as_usize(self) -> usize {
-    usize::from(self.as_u8())
-  }
 }
 
 lazy_static! {
@@ -149,9 +146,9 @@ lazy_static! {
         // double_fault (with a pre-defined reserved stack)
         unsafe { idt.double_fault.set_handler_fn(double_fault_handler).set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX) };
         // timer_interruption
-        idt[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_interrupt_handler);
+        idt[InterruptIndex::Timer.as_u8()].set_handler_fn(timer_interrupt_handler);
         // keyboard_interruption
-        idt[InterruptIndex::Keyboard.as_usize()].set_handler_fn(async_keyboard_interrupt_handler);
+        idt[InterruptIndex::Keyboard.as_u8()].set_handler_fn(async_keyboard_interrupt_handler);
         // page_fault
         idt.page_fault.set_handler_fn(page_fault_handler);
         // ref bind

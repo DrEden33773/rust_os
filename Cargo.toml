@@ -41,7 +41,7 @@ cfg-if = "1.0.0"
 bootloader = { version = "0.9.28", features = ["map_physical_memory"] }
 volatile = "0.2.6"
 spin = "0.9.8"
-x86_64 = "0.14.12"
+x86_64 = "0.15.2"
 uart_16550 = "0.3.0"
 pic8259 = "0.10.4"
 pc-keyboard = "0.7.0"

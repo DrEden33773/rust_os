@@ -1,9 +1,10 @@
+#![allow(stable_features)]
 #![no_std]
 #![cfg_attr(test, no_main)]
-// #![feature(const_mut_refs)] // stable in 1.83.0-nightly
+#![feature(const_mut_refs)] // stable in 1.83.0-nightly
 #![feature(custom_test_frameworks)]
 #![feature(abi_x86_interrupt)]
-#![feature(async_closure)]
+#![feature(async_closure)] // stable in 1.85.0-nightly
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
